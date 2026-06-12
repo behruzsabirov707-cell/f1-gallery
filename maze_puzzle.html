@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maze Puzzle</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #1a1a2e;
+    color: #eee;
+    font-family: 'Segoe UI', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    gap: 16px;
+  }
+  h1 { font-size: 2rem; color: #e94560; letter-spacing: 2px; }
+  #info {
+    display: flex;
+    gap: 32px;
+    font-size: 1rem;
+    color: #aaa;
+  }
+  #info span { color: #e94560; font-weight: bold; }
+  canvas {
+    border: 3px solid #e94560;
+    border-radius: 4px;
+    box-shadow: 0 0 30px #e9456055;
+  }
+  #controls {
+    display: flex;
+    gap: 12px;
+    flex-direction: column;
+    align-items: center;
+  }
+  .btn-row { display: flex; gap: 8px; }
+  button {
+    background: #16213e;
+    color: #eee;
+    border: 2px solid #e94560;
+    border-radius: 6px;
+    padding: 8px 20px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  button:hover { background: #e94560; }
+  #dpad button { width: 48px; height: 48px; font-size: 1.2rem; }
+  #message {
+    font-size: 1.4rem;
+    color: #4ade80;
+    font-weight: bold;
+    min-height: 1.6rem;
+    letter-spacing: 1px;
+  }
+  #difficulty { display: flex; gap: 8px; }
+</style>
+</head>
+<body>
+
+<h1>MAZE PUZZLE</h1>
+
+<div id="info">
+  <div>Moves: <span id="moveCount">0</span></div>
+  <div>Level: <span id="levelLabel">1</span></div>
+</div>
+
+<canvas id="canvas"></canvas>
+<div id="message"></div>
+
+<div id="controls">
+  <div id="difficulty">
+    <button onclick="startGame(11)">Easy</button>
+    <button onclick="startGame(19)">Medium</button>
+    <button onclick="startGame(31)">Hard</button>
+  </div>
+  <div id="dpad">
+    <div class="btn-row" style="justify-content:center">
+      <button onclick="move(0,-1)">▲</button>
+    </div>
+    <div class="btn-row">
+      <button onclick="move(-1,0)">◀</button>
+      <button onclick="move(0,1)">▼</button>
+      <button onclick="move(1,0)">▶</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+let COLS, ROWS, CELL;
+let grid, player, moves, level = 1;
+
+const WALL = 1, PATH = 0;
+
+function startGame(size) {
+  COLS = size || 19;
+  ROWS = size || 19;
+  CELL = Math.min(Math.floor(520 / COLS), 30);
+  canvas.width = COLS * CELL;
+  canvas.height = ROWS * CELL;
+  moves = 0;
+  document.getElementById('moveCount').textContent = 0;
+  document.getElementById('message').textContent = '';
+  generateMaze();
+  draw();
+}
+
+function generateMaze() {
+  grid = Array.from({ length: ROWS }, () => Array(COLS).fill(WALL));
+
+  function carve(x, y) {
+    grid[y][x] = PATH;
+    const dirs = shuffle([[0,-2],[0,2],[-2,0],[2,0]]);
+    for (const [dx, dy] of dirs) {
+      const nx = x + dx, ny = y + dy;
+      if (nx > 0 && nx < COLS-1 && ny > 0 && ny < ROWS-1 && grid[ny][nx] === WALL) {
+        grid[y + dy/2][x + dx/2] = PATH;
+        carve(nx, ny);
+      }
+    }
+  }
+
+  carve(1, 1);
+
+  // ensure start and end are open
+  grid[1][1] = PATH;
+  grid[ROWS-2][COLS-2] = PATH;
+
+  player = { x: 1, y: 1 };
+}
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function move(dx, dy) {
+  if (document.getElementById('message').textContent) return;
+  const nx = player.x + dx;
+  const ny = player.y + dy;
+  if (nx < 0 || ny < 0 || nx >= COLS || ny >= ROWS) return;
+  if (grid[ny][nx] === WALL) return;
+  player.x = nx;
+  player.y = ny;
+  moves++;
+  document.getElementById('moveCount').textContent = moves;
+  draw();
+  if (player.x === COLS - 2 && player.y === ROWS - 2) {
+    document.getElementById('message').textContent = `You escaped in ${moves} moves!`;
+    level++;
+    document.getElementById('levelLabel').textContent = level;
+  }
+}
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  for (let y = 0; y < ROWS; y++) {
+    for (let x = 0; x < COLS; x++) {
+      if (grid[y][x] === WALL) {
+        ctx.fillStyle = '#0f3460';
+      } else {
+        ctx.fillStyle = '#16213e';
+      }
+      ctx.fillRect(x * CELL, y * CELL, CELL, CELL);
+    }
+  }
+
+  // Exit
+  ctx.fillStyle = '#4ade80';
+  ctx.fillRect((COLS-2) * CELL + 2, (ROWS-2) * CELL + 2, CELL - 4, CELL - 4);
+  ctx.fillStyle = '#1a1a2e';
+  ctx.font = `${CELL * 0.65}px serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('★', (COLS-2) * CELL + CELL/2, (ROWS-2) * CELL + CELL/2);
+
+  // Player
+  ctx.fillStyle = '#e94560';
+  const r = CELL * 0.38;
+  ctx.beginPath();
+  ctx.arc(player.x * CELL + CELL/2, player.y * CELL + CELL/2, r, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowUp')    move(0, -1);
+  if (e.key === 'ArrowDown')  move(0,  1);
+  if (e.key === 'ArrowLeft')  move(-1, 0);
+  if (e.key === 'ArrowRight') move(1,  0);
+});
+
+// swipe support
+let touchStart = null;
+canvas.addEventListener('touchstart', e => {
+  touchStart = e.touches[0];
+}, { passive: true });
+canvas.addEventListener('touchend', e => {
+  if (!touchStart) return;
+  const dx = e.changedTouches[0].clientX - touchStart.clientX;
+  const dy = e.changedTouches[0].clientY - touchStart.clientY;
+  if (Math.abs(dx) > Math.abs(dy)) move(dx > 0 ? 1 : -1, 0);
+  else move(0, dy > 0 ? 1 : -1);
+  touchStart = null;
+}, { passive: true });
+
+startGame(19);
+</script>
+</body>
+</html>
