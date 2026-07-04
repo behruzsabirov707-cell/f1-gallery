@@ -95,6 +95,10 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .pipeline-packet {
+    display: none;
+  }
+
   .pipeline-node {
     border-color: var(--color-signal);
     box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-signal) 20%, transparent);
