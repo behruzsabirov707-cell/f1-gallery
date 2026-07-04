@@ -1,0 +1,62 @@
+@import "tailwindcss";
+
+@theme {
+  --color-signal: #ff9d42;
+  --color-wire: #3d5a80;
+  --color-bg: #0a0c0f;
+  --color-bg-elevated: #12161a;
+  --color-border: #20262c;
+  --color-ink: #eef1f4;
+  --color-ink-muted: #a3aab3;
+
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-lora);
+  --font-mono: var(--font-plex-mono);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-bg);
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    rgba(245, 245, 247, 0.06) 1px,
+    transparent 0
+  );
+  background-size: 28px 28px;
+  color: var(--color-ink);
+}
+
+@keyframes hero-glow-drift {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    transform: translate(-50%, -56%) scale(1.08);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero-glow {
+    animation: hero-glow-drift 14s ease-in-out infinite;
+  }
+}
+
+@keyframes hero-chip-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-14px);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero-chip {
+    animation: hero-chip-float 6s ease-in-out infinite;
+  }
+}
