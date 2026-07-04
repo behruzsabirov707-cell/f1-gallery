@@ -60,3 +60,43 @@ body {
     animation: hero-chip-float 6s ease-in-out infinite;
   }
 }
+
+@keyframes pipeline-packet {
+  0% {
+    left: 0%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+@keyframes pipeline-node-pulse {
+  0%,
+  85%,
+  100% {
+    border-color: var(--color-border);
+    box-shadow: none;
+  }
+  10%,
+  25% {
+    border-color: var(--color-signal);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-signal) 20%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .pipeline-packet {
+    animation: pipeline-packet 5s linear infinite;
+  }
+
+  .pipeline-node {
+    animation: pipeline-node-pulse 5s linear infinite;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pipeline-node {
+    border-color: var(--color-signal);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-signal) 20%, transparent);
+  }
+}
