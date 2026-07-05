@@ -23,7 +23,7 @@ export default function ServiceDetail({
       <section className="relative overflow-hidden pt-20 pb-16">
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute left-1/2 top-0 h-[480px] w-[800px] -translate-x-1/2 rounded-full bg-(--color-signal)/20 blur-[120px]"
+          className="pointer-events-none absolute left-1/2 top-0 h-[480px] w-[800px] -translate-x-1/2 rounded-full bg-gradient-to-tr from-(--color-brand-from)/20 to-(--color-brand-to)/20 blur-[120px]"
         />
         <Container className="relative flex flex-col items-center gap-6 text-center">
           <Link
@@ -32,8 +32,8 @@ export default function ServiceDetail({
           >
             ← {serviceDetail.backToServices}
           </Link>
-          <span className="flex h-14 w-14 items-center justify-center rounded-tr-2xl rounded-bl-2xl rounded-tl-md rounded-br-md bg-(--color-signal)">
-            <Icon className="h-6 w-6 text-(--color-bg)" strokeWidth={1.75} />
+          <span className="flex h-14 w-14 items-center justify-center rounded-tr-2xl rounded-bl-2xl rounded-tl-md rounded-br-md bg-gradient-to-br from-(--color-brand-from) to-(--color-brand-to)">
+            <Icon className="h-6 w-6 text-white" strokeWidth={1.75} />
           </span>
           <h1 className="max-w-2xl text-3xl font-semibold text-(--color-ink) sm:text-5xl">
             {content.title}
@@ -61,7 +61,7 @@ export default function ServiceDetail({
                   key={item}
                   className="flex gap-2 text-sm text-(--color-ink-muted)"
                 >
-                  <span aria-hidden="true" className="text-(--color-signal)">
+                  <span aria-hidden="true" className="text-(--color-brand-to)">
                     →
                   </span>
                   {item}
@@ -87,7 +87,7 @@ export default function ServiceDetail({
               </p>
             </div>
             <div className="flex flex-col gap-3 rounded-xl border border-(--color-border) bg-(--color-bg-elevated) p-6">
-              <span className="text-xs font-semibold tracking-[0.2em] text-(--color-signal)">
+              <span className="text-xs font-semibold tracking-[0.2em] text-(--color-brand-to)">
                 {serviceDetail.afterLabel}
               </span>
               <p className="text-sm text-(--color-ink-muted)">
@@ -107,9 +107,9 @@ export default function ServiceDetail({
             {content.howItWorks.map((step, i) => (
               <li
                 key={step.title}
-                className="flex flex-col gap-3 border-t-2 border-(--color-wire) pt-4"
+                className="flex flex-col gap-3 border-t-2 border-(--color-brand-to)/30 pt-4"
               >
-                <span className="font-(family-name:--font-mono) text-sm text-(--color-signal)">
+                <span className="font-(family-name:--font-mono) text-sm text-(--color-brand-to)">
                   {String(i + 1).padStart(2, "0")}
                 </span>
                 <h3 className="text-base font-semibold text-(--color-ink)">

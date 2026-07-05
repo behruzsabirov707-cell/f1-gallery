@@ -10,7 +10,7 @@ export default function SectionHeading({
   return (
     <div className="mx-auto flex max-w-2xl flex-col items-center gap-4 text-center">
       {eyebrow && (
-        <span className="font-(family-name:--font-display) text-xs italic tracking-[0.2em] text-(--color-signal)">
+        <span className="font-(family-name:--font-display) text-xs italic tracking-[0.2em] text-(--color-brand-to)">
           {eyebrow}
         </span>
       )}

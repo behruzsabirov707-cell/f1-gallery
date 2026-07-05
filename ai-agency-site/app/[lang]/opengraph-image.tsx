@@ -21,9 +21,9 @@ export default async function Image() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "#0a0c0f",
+          background: "#08080C",
           backgroundImage:
-            "radial-gradient(circle at 50% 55%, rgba(255,157,66,0.30), rgba(10,12,15,0) 60%)",
+            "radial-gradient(circle at 50% 55%, rgba(109,74,232,0.35), rgba(8,8,12,0) 60%)",
         }}
       >
         <img src={logoSrc} width={620} height={457} />

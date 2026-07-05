@@ -14,7 +14,7 @@ export default function WhyUs({ dict }: { dict: Dictionary }) {
     <section id="why-us" className="relative overflow-hidden py-24">
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-0 h-[420px] w-[720px] -translate-x-1/2 -translate-y-1/3 rounded-full bg-(--color-signal)/10 blur-[110px]"
+        className="pointer-events-none absolute left-1/2 top-0 h-[420px] w-[720px] -translate-x-1/2 -translate-y-1/3 rounded-full bg-gradient-to-tr from-(--color-brand-from)/10 to-(--color-brand-to)/10 blur-[110px]"
       />
       <Container className="relative flex flex-col gap-12">
         <Reveal>
@@ -29,12 +29,9 @@ export default function WhyUs({ dict }: { dict: Dictionary }) {
                 delay={i * 0.08}
                 className="flex flex-col gap-3 rounded-xl border border-(--color-border) bg-(--color-bg-elevated)/60 p-6"
               >
-                <span className="flex h-11 w-11 items-center justify-center rounded-tr-2xl rounded-bl-2xl rounded-tl-md rounded-br-md bg-(--color-signal)">
+                <span className="flex h-11 w-11 items-center justify-center rounded-tr-2xl rounded-bl-2xl rounded-tl-md rounded-br-md bg-gradient-to-br from-(--color-brand-from) to-(--color-brand-to)">
                   {Icon && (
-                    <Icon
-                      className="h-5 w-5 text-(--color-bg)"
-                      strokeWidth={1.75}
-                    />
+                    <Icon className="h-5 w-5 text-white" strokeWidth={1.75} />
                   )}
                 </span>
                 <h3 className="text-lg font-semibold text-(--color-ink)">

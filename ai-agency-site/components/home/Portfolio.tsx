@@ -20,10 +20,10 @@ export default function Portfolio({ dict }: { dict: Dictionary }) {
 
         <Reveal
           delay={0.1}
-          className="flex flex-col gap-6 rounded-xl border border-(--color-signal)/30 bg-(--color-signal)/10 p-8 sm:flex-row sm:items-center"
+          className="flex flex-col gap-6 rounded-xl border border-(--color-brand-to)/30 bg-gradient-to-br from-(--color-brand-from)/10 to-(--color-brand-to)/10 p-8 sm:flex-row sm:items-center"
         >
-          <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-tr-2xl rounded-bl-2xl rounded-tl-md rounded-br-md border border-(--color-signal)/40 bg-(--color-bg-elevated)">
-            <Bot className="h-6 w-6 text-(--color-signal)" strokeWidth={1.75} />
+          <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-tr-2xl rounded-bl-2xl rounded-tl-md rounded-br-md border border-(--color-brand-to)/40 bg-(--color-bg-elevated)">
+            <Bot className="h-6 w-6 text-(--color-brand-to)" strokeWidth={1.75} />
           </span>
           <div className="flex flex-col gap-2">
             <h3 className="text-lg font-semibold text-(--color-ink)">
@@ -42,7 +42,7 @@ export default function Portfolio({ dict }: { dict: Dictionary }) {
               delay={0.15 + i * 0.08}
               className="flex flex-col gap-2 rounded-xl border border-(--color-border) bg-(--color-bg-elevated)/60 p-6"
             >
-              <span className="font-(family-name:--font-mono) text-4xl text-(--color-signal)">
+              <span className="font-(family-name:--font-mono) text-4xl text-(--color-brand-to)">
                 {metric.value}
               </span>
               <p className="text-sm text-(--color-ink-muted)">{metric.label}</p>

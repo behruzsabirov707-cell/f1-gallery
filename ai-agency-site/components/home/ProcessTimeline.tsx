@@ -17,9 +17,12 @@ export default function ProcessTimeline({ dict }: { dict: Dictionary }) {
         </Reveal>
         <ol className="grid gap-8 sm:grid-cols-2 lg:grid-cols-5">
           {process.steps.map((step, i) => (
-            <li key={step.id} className="border-t-2 border-(--color-wire) pt-4">
+            <li
+              key={step.id}
+              className="border-t-2 border-(--color-brand-to)/30 pt-4"
+            >
               <Reveal delay={i * 0.08} className="flex flex-col gap-3">
-                <span className="font-(family-name:--font-mono) text-sm text-(--color-signal)">
+                <span className="font-(family-name:--font-mono) text-sm text-(--color-brand-to)">
                   {String(i + 1).padStart(2, "0")}
                 </span>
                 <h3 className="text-base font-semibold text-(--color-ink)">
