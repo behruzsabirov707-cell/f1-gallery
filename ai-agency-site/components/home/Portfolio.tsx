@@ -42,7 +42,7 @@ export default function Portfolio({ dict }: { dict: Dictionary }) {
               delay={0.15 + i * 0.08}
               className="flex flex-col gap-2 rounded-xl border border-(--color-border) bg-(--color-bg-elevated)/60 p-6"
             >
-              <span className="font-(family-name:--font-display) text-4xl italic text-(--color-brand-to)">
+              <span className="font-(family-name:--font-mono) text-4xl text-(--color-signal)">
                 {metric.value}
               </span>
               <p className="text-sm text-(--color-ink-muted)">{metric.label}</p>
