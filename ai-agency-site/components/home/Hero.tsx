@@ -29,7 +29,7 @@ export default function Hero({
     <section className="relative flex min-h-[78dvh] items-center overflow-hidden py-20 sm:min-h-[82dvh]">
       <div
         aria-hidden="true"
-        className="hero-glow pointer-events-none absolute left-1/2 top-1/2 h-[560px] w-[900px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-tr from-(--color-brand-from)/25 to-(--color-brand-to)/25 blur-[120px]"
+        className="hero-glow pointer-events-none absolute left-1/2 top-1/2 h-[560px] w-[900px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-(--color-signal)/20 blur-[120px]"
       />
       <Container className="relative flex flex-col items-center gap-6 text-center">
         <motion.span
@@ -37,7 +37,7 @@ export default function Hero({
           animate="visible"
           custom={0}
           variants={fadeUp}
-          className="font-(family-name:--font-display) text-xs italic tracking-[0.2em] text-(--color-brand-to)"
+          className="font-(family-name:--font-display) text-xs italic tracking-[0.2em] text-(--color-signal)"
         >
           {hero.eyebrow}
         </motion.span>
@@ -49,7 +49,7 @@ export default function Hero({
           className="max-w-3xl text-4xl font-semibold leading-tight text-(--color-ink) sm:text-6xl"
         >
           {hero.titleLine1}{" "}
-          <span className="font-(family-name:--font-display) italic text-(--color-brand-to)">
+          <span className="font-(family-name:--font-display) italic text-(--color-signal)">
             {hero.titleAccent}
           </span>{" "}
           {hero.titleLine2}
