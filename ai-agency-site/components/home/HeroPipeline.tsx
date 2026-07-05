@@ -8,7 +8,7 @@ export default function HeroPipeline({
   return (
     <div
       aria-hidden="true"
-      className="relative mt-4 flex w-full max-w-2xl flex-col items-stretch gap-6 sm:flex-row sm:items-center sm:gap-0"
+      className="relative mt-4 flex w-full max-w-2xl flex-col items-stretch gap-6 sm:flex-row sm:items-start sm:gap-0"
     >
       <div className="pointer-events-none absolute left-[12.5%] right-[12.5%] top-6 hidden h-px bg-(--color-wire) sm:block">
         <span className="pipeline-packet absolute top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-(--color-signal) shadow-[0_0_8px_2px_rgba(255,157,66,0.6)]" />

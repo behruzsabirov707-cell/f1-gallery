@@ -20,7 +20,7 @@ const lora = Lora({
 
 const plexMono = IBM_Plex_Mono({
   variable: "--font-plex-mono",
-  subsets: ["latin"],
+  subsets: ["latin", "cyrillic"],
   weight: ["400", "500"],
 });
 
