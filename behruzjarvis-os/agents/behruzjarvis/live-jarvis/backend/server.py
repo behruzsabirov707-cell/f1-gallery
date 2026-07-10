@@ -8,7 +8,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 from session_timer import SilenceTimer
-from mock_session import MockLiveSession
+from gemini_session import GeminiLiveSession
 
 FRONTEND_DIR = Path(__file__).resolve().parent.parent / "frontend"
 SILENCE_TIMEOUT_SECONDS = 10.0
@@ -16,7 +16,7 @@ SILENCE_TIMEOUT_SECONDS = 10.0
 app = FastAPI()
 app.mount("/static", StaticFiles(directory=FRONTEND_DIR), name="static")
 
-session_factory = MockLiveSession
+session_factory = GeminiLiveSession
 
 
 @app.get("/health")
