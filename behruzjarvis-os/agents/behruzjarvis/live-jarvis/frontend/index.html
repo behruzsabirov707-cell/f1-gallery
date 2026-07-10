@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<title>Live Jarvis</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="state-idle">
+  <div class="topbar">
+    <div class="logo">&#9670; JARVIS</div>
+    <div class="status" id="status-text">Kutilmoqda... "Jarvis" deng</div>
+  </div>
+
+  <div class="stage">
+    <div class="ring r1"></div>
+    <div class="ring tick"></div>
+    <div class="ring r2"></div>
+    <div class="ring r3"></div>
+    <div class="core" id="core"></div>
+    <div class="hud-corner tl"></div><div class="hud-corner tr"></div>
+    <div class="hud-corner bl"></div><div class="hud-corner br"></div>
+  </div>
+
+  <div class="transcript-panel" id="transcript"></div>
+
+  <button class="mute-btn" id="mute-btn">MUTE</button>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
