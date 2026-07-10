@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 from session_timer import SilenceTimer
@@ -21,6 +22,11 @@ session_factory = MockLiveSession
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+
+@app.get("/")
+def index():
+    return FileResponse(FRONTEND_DIR / "index.html")
 
 
 @app.websocket("/ws")
