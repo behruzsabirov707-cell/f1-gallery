@@ -9,6 +9,10 @@ let audioContext = null;
 let micStream = null;
 let processorNode = null;
 let recognition = null;
+let nextPlayTime = 0;
+let playbackContext = null;
+
+const PLAYBACK_SAMPLE_RATE = 24000;
 
 function setState(state) {
   BODY.className = 'state-' + state;
@@ -61,6 +65,7 @@ function startWakeWordListener() {
 function openLiveSession() {
   setState('listening');
   setStatus('Ulanmoqda...');
+  nextPlayTime = 0;
   ws = new WebSocket('ws://' + location.host + '/ws');
 
   ws.onopen = () => {
@@ -98,7 +103,50 @@ function handleServerEvent(data) {
     setStatus('Xato: ' + data.text);
   } else if (data.type === 'closed') {
     if (ws) ws.close();
+  } else if (data.type === 'audio') {
+    playAudioChunk(data.data);
   }
+}
+
+// Decodes a base64-encoded PCM16 (mono, 24000 Hz — Gemini Live API's native
+// audio output rate) chunk and schedules it for gapless playback.
+//
+// Uses a dedicated `playbackContext` created at 24000 Hz, kept separate from
+// the mic-capture `audioContext` (which runs at 16000 Hz for input). Per the
+// Web Audio API spec, an AudioBuffer's sample rate is independent of its
+// AudioContext's rate and gets auto-resampled at playback with correct
+// pitch/duration either way — but chaining many independently-resampled
+// chunks back-to-back (as this streaming playback does) can introduce
+// audible seam artifacts at chunk boundaries when the rates differ. Running
+// the output context natively at 24000 Hz avoids that resampling entirely.
+function playAudioChunk(base64Data) {
+  if (!playbackContext) {
+    playbackContext = new AudioContext({ sampleRate: PLAYBACK_SAMPLE_RATE });
+    nextPlayTime = 0;
+  }
+  setState('speaking');
+
+  const binary = atob(base64Data);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  const pcm16 = new Int16Array(bytes.buffer);
+
+  const frameCount = pcm16.length;
+  if (frameCount === 0) return;
+
+  const buffer = playbackContext.createBuffer(1, frameCount, PLAYBACK_SAMPLE_RATE);
+  const channelData = buffer.getChannelData(0);
+  for (let i = 0; i < frameCount; i++) {
+    channelData[i] = pcm16[i] / 32768;
+  }
+
+  const source = playbackContext.createBufferSource();
+  source.buffer = buffer;
+  source.connect(playbackContext.destination);
+
+  const startTime = Math.max(playbackContext.currentTime, nextPlayTime);
+  source.start(startTime);
+  nextPlayTime = startTime + buffer.duration;
 }
 
 async function startMicCapture() {

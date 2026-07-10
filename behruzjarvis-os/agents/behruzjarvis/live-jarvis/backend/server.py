@@ -9,6 +9,7 @@ from fastapi.staticfiles import StaticFiles
 
 from session_timer import SilenceTimer
 from gemini_session import GeminiLiveSession
+from mock_session import MockLiveSession
 
 FRONTEND_DIR = Path(__file__).resolve().parent.parent / "frontend"
 SILENCE_TIMEOUT_SECONDS = 10.0
@@ -32,8 +33,17 @@ def index():
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
-    session = session_factory()
-    await session.start()
+
+    try:
+        session = session_factory()
+        await session.start()
+    except Exception as exc:
+        try:
+            await websocket.send_text(json.dumps({"type": "error", "text": str(exc)}))
+        except Exception:
+            pass
+        return
+
     timer = SilenceTimer(timeout_seconds=SILENCE_TIMEOUT_SECONDS)
 
     async def reader():
@@ -51,9 +61,16 @@ async def websocket_endpoint(websocket: WebSocket):
             return
 
     async def writer():
-        async for event in session.receive_events():
-            timer.touch()
-            await websocket.send_text(json.dumps(event))
+        try:
+            async for event in session.receive_events():
+                timer.touch()
+                await websocket.send_text(json.dumps(event))
+        except Exception as exc:
+            try:
+                await websocket.send_text(json.dumps({"type": "error", "text": str(exc)}))
+            except Exception:
+                pass
+            return
 
     async def watch_timeout():
         while True:
