@@ -2,28 +2,184 @@
 <html lang="uz">
 <head>
 <meta charset="UTF-8">
-<title>Live Jarvis</title>
-<link rel="stylesheet" href="/static/style.css">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jarvis OS</title>
+<link rel="stylesheet" href="/static/style.css?v=5">
 </head>
 <body class="state-idle">
-  <div class="topbar">
-    <div class="logo">&#9670; JARVIS</div>
-    <div class="status" id="status-text">Kutilmoqda... "Jarvis" deng</div>
+
+  <div class="scene-bg" aria-hidden="true"></div>
+  <div class="scene-vignette" aria-hidden="true"></div>
+  <div class="desk-glow" aria-hidden="true"></div>
+
+  <!-- Desk props (pixel-identical crops from the reference render) -->
+  <img class="desk-prop prop-car" src="/static/assets/prop-car.png" alt="" draggable="false" aria-hidden="true">
+  <img class="desk-prop prop-mug" src="/static/assets/prop-mug.png" alt="" draggable="false" aria-hidden="true">
+  <img class="desk-prop prop-pen" src="/static/assets/prop-pen.png" alt="" draggable="false" aria-hidden="true">
+
+  <!-- Title -->
+  <header class="title-block">
+    <div class="title-main">JARVIS OS</div>
+    <div class="title-sub">BEHRUZ JARVIS</div>
+  </header>
+
+  <!-- LEFT rail -->
+  <div class="rail rail-left">
+  <section class="panel panel-system">
+    <div class="panel-head">
+      <span class="panel-title">SYSTEM OVERVIEW</span>
+    </div>
+    <div class="panel-label">PERFORMANCE</div>
+    <div class="gauge-row">
+      <div class="ring-stat" data-ring="cpu">
+        <svg viewBox="0 0 72 72"><circle class="track" cx="36" cy="36" r="30"/><circle class="prog" cx="36" cy="36" r="30" pathLength="100"/></svg>
+        <div class="ring-val"><b data-fake="cpu">98</b><small>%</small></div>
+        <div class="ring-lbl">CPU</div>
+      </div>
+      <div class="ring-stat" data-ring="gpu">
+        <svg viewBox="0 0 72 72"><circle class="track" cx="36" cy="36" r="30"/><circle class="prog" cx="36" cy="36" r="30" pathLength="100"/></svg>
+        <div class="ring-val"><b data-fake="gpu">82</b><small>%</small></div>
+        <div class="ring-lbl">GPU</div>
+      </div>
+      <div class="ring-stat" data-ring="ram">
+        <svg viewBox="0 0 72 72"><circle class="track" cx="36" cy="36" r="30"/><circle class="prog" cx="36" cy="36" r="30" pathLength="100"/></svg>
+        <div class="ring-val"><b data-fake="ram">76</b><small>%</small></div>
+        <div class="ring-lbl">RAM</div>
+      </div>
+      <div class="ring-stat" data-ring="net">
+        <svg viewBox="0 0 72 72"><circle class="track" cx="36" cy="36" r="30"/><circle class="prog" cx="36" cy="36" r="30" pathLength="100"/></svg>
+        <div class="ring-val"><b data-fake="net">64</b><small>%</small></div>
+        <div class="ring-lbl">NET</div>
+      </div>
+    </div>
+    <div class="sys-status">
+      <div class="panel-label">SYSTEM STATUS</div>
+      <div class="status-ok"><span class="dot"></span> All Systems Operational</div>
+    </div>
+  </section>
+
+  <!-- LEFT: Tasks -->
+  <section class="panel panel-tasks">
+    <div class="panel-head">
+      <span class="panel-title">TASKS &amp; SCHEDULE</span>
+      <span class="panel-icon">+</span>
+    </div>
+    <div class="cal-meta">
+      <span id="cal-date-line">10 | JUNE | 2026</span>
+      <span class="cal-nav">‹  ›</span>
+    </div>
+    <ul class="task-list" id="task-list">
+      <li><span class="t-time">09:00</span><span class="t-body"><b>Project Meeting</b><small>Online</small></span></li>
+      <li><span class="t-time">11:30</span><span class="t-body"><b>AI Model Training</b></span></li>
+      <li><span class="t-time">14:00</span><span class="t-body"><b>Code Review</b></span></li>
+      <li><span class="t-time">17:00</span><span class="t-body"><b>Workout</b></span></li>
+      <li><span class="t-time">20:00</span><span class="t-body"><b>Reading Time</b></span></li>
+    </ul>
+    <button class="link-btn" type="button">View Calendar</button>
+  </section>
+
+  <!-- LEFT: Environment -->
+  <section class="panel panel-env">
+    <div class="panel-head">
+      <span class="panel-title">ENVIRONMENT</span>
+    </div>
+    <div class="env-row">
+      <div class="env-temp">
+        <div class="env-deg"><span data-fake="wtemp">22</span>°C</div>
+        <div class="env-sky">Clear Sky</div>
+        <div class="env-loc">Tashkent, UZ</div>
+      </div>
+      <div class="moon" aria-hidden="true"></div>
+    </div>
+  </section>
   </div>
 
-  <div class="stage">
-    <div class="ring r1"></div>
-    <div class="ring tick"></div>
-    <div class="ring r2"></div>
-    <div class="ring r3"></div>
-    <div class="core" id="core"></div>
-    <div class="hud-corner tl"></div><div class="hud-corner tr"></div>
-    <div class="hud-corner bl"></div><div class="hud-corner br"></div>
+  <!-- CENTER: Hologram (pixel-identical crop from the reference render) -->
+  <div class="holo-stage" id="core">
+    <div class="holo-particles" id="particles"></div>
+    <div class="holo-sphere">
+      <div class="sphere-glow"></div>
+      <img class="sphere-image" src="/static/assets/holo-cutout.png" alt="" draggable="false" />
+    </div>
   </div>
 
-  <div class="transcript-panel" id="transcript"></div>
+  <!-- RIGHT rail -->
+  <div class="rail rail-right">
+  <section class="panel panel-voice">
+    <div class="panel-head">
+      <span class="panel-title">VOICE INTERACTION</span>
+      <span class="panel-icon">◎</span>
+    </div>
+    <canvas class="voice-wave" id="voice-wave" width="320" height="56"></canvas>
+    <div class="voice-state" id="status-text">Listening...</div>
+  </section>
 
-  <button class="mute-btn" id="mute-btn">MUTE</button>
+  <!-- RIGHT: AI Chat (transcript) -->
+  <section class="panel panel-chat">
+    <div class="panel-head">
+      <span class="panel-title">AI CHAT</span>
+      <span class="panel-icon">▢</span>
+    </div>
+    <div class="chat-log" id="transcript">
+      <div class="chat-msg assistant">
+        <span class="avatar-dot"></span>
+        <div class="bubble">
+          <div>Hello, Behruz!</div>
+          <div class="muted">How can I assist you today?</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RIGHT: Media -->
+  <section class="panel panel-media">
+    <div class="panel-head">
+      <span class="panel-title">MEDIA PLAYER</span>
+    </div>
+    <div class="media-track">
+      <div class="media-art"></div>
+      <div class="media-meta">
+        <div class="media-title">The Weeknd</div>
+        <div class="media-sub">Blinding Lights</div>
+      </div>
+    </div>
+    <div class="media-controls">
+      <button type="button" aria-label="prev">⏮</button>
+      <button type="button" class="play" aria-label="play">⏸</button>
+      <button type="button" aria-label="next">⏭</button>
+    </div>
+  </section>
+  </div>
+
+  <!-- Command bar -->
+  <div class="command-wrap">
+    <div class="command-bar">
+      <span class="cmd-spark"></span>
+      <input id="command-input" type="text" placeholder="What would you like to command, Behruz?" readonly>
+      <button class="cmd-mic" id="mute-btn" type="button" title="Mute / Unmute">🎤</button>
+    </div>
+    <nav class="nav-dock">
+      <button type="button" class="nav-item active"><span>💬</span>CHAT</button>
+      <button type="button" class="nav-item"><span>&lt;/&gt;</span>CODE</button>
+      <button type="button" class="nav-item"><span>📁</span>FILES</button>
+      <button type="button" class="nav-item"><span>📅</span>CALENDAR</button>
+      <button type="button" class="nav-item"><span>⚙</span>SETTINGS</button>
+    </nav>
+  </div>
+
+  <!-- Corners -->
+  <div class="clock-corner">
+    <div class="clock-big" id="clock-time">23:42</div>
+    <div class="clock-date" id="clock-date">Tuesday, 10 June 2026</div>
+    <div class="clock-sess">Session: <span id="clock-session">00:00</span> · <span id="clock-connstate">Offline</span></div>
+  </div>
+
+  <div class="online-badge">
+    <span class="dot"></span>
+    STATUS<br><b>ONLINE</b>
+  </div>
+
+  <div class="tools-chip" id="tools-log" hidden></div>
 
   <script src="/static/app.js"></script>
 </body>

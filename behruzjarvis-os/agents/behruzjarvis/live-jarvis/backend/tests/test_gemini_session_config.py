@@ -1,4 +1,33 @@
+from types import SimpleNamespace
+
 import gemini_session
+
+
+class _FakeSDKSession:
+    def __init__(self, responses):
+        self._responses = responses
+
+    async def receive(self):
+        for response in self._responses:
+            yield response
+
+
+async def test_receive_events_yields_interrupted_on_server_side_barge_in():
+    content = SimpleNamespace(
+        interrupted=True,
+        input_transcription=None,
+        output_transcription=None,
+        model_turn=None,
+    )
+    response = SimpleNamespace(server_content=content, tool_call=None)
+
+    session = gemini_session.GeminiLiveSession.__new__(gemini_session.GeminiLiveSession)
+    session._session = _FakeSDKSession([response])
+    session._closed = False
+
+    first_event = await session.receive_events().__anext__()
+
+    assert first_event == {"type": "interrupted"}
 
 
 def test_build_config_includes_google_search_and_function_tools():

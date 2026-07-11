@@ -157,8 +157,8 @@ class GeminiLiveSession:
         self._session = await self._session_cm.__aenter__()
 
     async def send_audio(self, pcm_bytes: bytes) -> None:
-        await self._session.send(
-            input=types.Blob(data=pcm_bytes, mime_type="audio/pcm;rate=16000")
+        await self._session.send_realtime_input(
+            audio=types.Blob(data=pcm_bytes, mime_type="audio/pcm;rate=16000")
         )
 
     async def receive_events(self):
@@ -166,6 +166,9 @@ class GeminiLiveSession:
             async for response in self._session.receive():
                 content = response.server_content
                 if content:
+                    if content.interrupted:
+                        yield {"type": "interrupted"}
+
                     input_transcription = getattr(content, "input_transcription", None)
                     if input_transcription and getattr(input_transcription, "text", None):
                         yield {"type": "transcript", "role": "user", "text": input_transcription.text}
@@ -195,8 +198,8 @@ class GeminiLiveSession:
                         function_responses.append(
                             types.FunctionResponse(name=fc.name, id=fc.id, response={"result": result})
                         )
-                    await self._session.send(
-                        input=types.LiveClientToolResponse(function_responses=function_responses)
+                    await self._session.send_tool_response(
+                        function_responses=function_responses
                     )
 
     async def close(self) -> None:

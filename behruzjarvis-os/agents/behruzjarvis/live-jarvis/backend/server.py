@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 
 from session_timer import SilenceTimer
@@ -17,6 +17,14 @@ SILENCE_TIMEOUT_SECONDS = 10.0
 app = FastAPI()
 app.mount("/static", StaticFiles(directory=FRONTEND_DIR), name="static")
 
+
+@app.middleware("http")
+async def no_cache_static(request, call_next):
+    response = await call_next(request)
+    if request.url.path.startswith("/static/") or request.url.path == "/":
+        response.headers["Cache-Control"] = "no-store"
+    return response
+
 session_factory = GeminiLiveSession
 
 
@@ -27,7 +35,12 @@ def health():
 
 @app.get("/")
 def index():
-    return FileResponse(FRONTEND_DIR / "index.html")
+    html = (FRONTEND_DIR / "index.html").read_text(encoding="utf-8")
+    css_v = int((FRONTEND_DIR / "style.css").stat().st_mtime)
+    js_v = int((FRONTEND_DIR / "app.js").stat().st_mtime)
+    html = html.replace("/static/style.css", f"/static/style.css?v={css_v}")
+    html = html.replace("/static/app.js", f"/static/app.js?v={js_v}")
+    return HTMLResponse(html)
 
 
 @app.websocket("/ws")
