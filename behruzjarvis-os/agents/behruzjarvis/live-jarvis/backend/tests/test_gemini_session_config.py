@@ -40,7 +40,14 @@ def test_build_config_includes_google_search_and_function_tools():
 def test_function_declarations_match_tool_dispatch():
     declared_names = {fn["name"] for fn in gemini_session.FUNCTION_DECLARATIONS}
     dispatch_names = set(gemini_session.TOOL_DISPATCH.keys())
-    assert declared_names == dispatch_names
+    assert declared_names - gemini_session.CAMERA_FUNCTION_NAMES == dispatch_names
+
+
+def test_camera_function_names_are_declared_but_not_dispatched():
+    declared_names = {fn["name"] for fn in gemini_session.FUNCTION_DECLARATIONS}
+    assert gemini_session.CAMERA_FUNCTION_NAMES == {"open_camera", "close_camera"}
+    assert gemini_session.CAMERA_FUNCTION_NAMES <= declared_names
+    assert gemini_session.CAMERA_FUNCTION_NAMES.isdisjoint(gemini_session.TOOL_DISPATCH.keys())
 
 
 def test_each_function_declaration_has_object_parameters_schema():

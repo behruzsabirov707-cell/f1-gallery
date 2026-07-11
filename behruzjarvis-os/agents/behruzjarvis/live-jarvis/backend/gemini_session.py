@@ -68,6 +68,24 @@ FUNCTION_DECLARATIONS = [
             "required": [],
         },
     },
+    {
+        "name": "open_camera",
+        "description": "Kamerani ochish — foydalanuvchi nima ko'rsatayotganini real vaqtda ko'rish uchun.",
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+        },
+    },
+    {
+        "name": "close_camera",
+        "description": "Kamerani yopish.",
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+        },
+    },
 ]
 
 TOOL_DISPATCH = {
@@ -76,6 +94,8 @@ TOOL_DISPATCH = {
     "log_finance": tools.log_finance,
     "read_sheet": tools.read_sheet,
 }
+
+CAMERA_FUNCTION_NAMES = {"open_camera", "close_camera"}
 
 
 def _load_api_key() -> str:
