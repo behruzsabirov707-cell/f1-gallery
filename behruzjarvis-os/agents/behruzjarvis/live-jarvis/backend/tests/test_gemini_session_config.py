@@ -12,6 +12,23 @@ class _FakeSDKSession:
             yield response
 
 
+class _RecordingToolResponseSession(_FakeSDKSession):
+    def __init__(self, responses):
+        super().__init__(responses)
+        self.sent_tool_responses = []
+
+    async def send_tool_response(self, function_responses):
+        self.sent_tool_responses.append(function_responses)
+
+
+class _RecordingRealtimeInputSession:
+    def __init__(self):
+        self.calls = []
+
+    async def send_realtime_input(self, **kwargs):
+        self.calls.append(kwargs)
+
+
 async def test_receive_events_yields_interrupted_on_server_side_barge_in():
     content = SimpleNamespace(
         interrupted=True,
@@ -54,3 +71,64 @@ def test_each_function_declaration_has_object_parameters_schema():
     for fn in gemini_session.FUNCTION_DECLARATIONS:
         assert fn["parameters"]["type"] == "object"
         assert "properties" in fn["parameters"]
+
+
+async def test_receive_events_handles_open_camera_without_dispatch():
+    fc = SimpleNamespace(name="open_camera", args={}, id="fc-open")
+    response = SimpleNamespace(
+        server_content=None,
+        tool_call=SimpleNamespace(function_calls=[fc]),
+    )
+    session = gemini_session.GeminiLiveSession.__new__(gemini_session.GeminiLiveSession)
+    fake_sdk = _RecordingToolResponseSession([response])
+    session._session = fake_sdk
+    session._closed = False
+
+    events = []
+    async for event in session.receive_events():
+        events.append(event)
+        if len(events) == 2:
+            break
+
+    assert events[0] == {"type": "open_camera"}
+    assert len(fake_sdk.sent_tool_responses) == 1
+    sent = fake_sdk.sent_tool_responses[0][0]
+    assert sent.name == "open_camera"
+    assert sent.response == {"result": {"status": "ok"}}
+
+
+async def test_receive_events_handles_close_camera_without_dispatch():
+    fc = SimpleNamespace(name="close_camera", args={}, id="fc-close")
+    response = SimpleNamespace(
+        server_content=None,
+        tool_call=SimpleNamespace(function_calls=[fc]),
+    )
+    session = gemini_session.GeminiLiveSession.__new__(gemini_session.GeminiLiveSession)
+    fake_sdk = _RecordingToolResponseSession([response])
+    session._session = fake_sdk
+    session._closed = False
+
+    events = []
+    async for event in session.receive_events():
+        events.append(event)
+        if len(events) == 2:
+            break
+
+    assert events[0] == {"type": "close_camera"}
+    assert len(fake_sdk.sent_tool_responses) == 1
+    sent = fake_sdk.sent_tool_responses[0][0]
+    assert sent.name == "close_camera"
+    assert sent.response == {"result": {"status": "ok"}}
+
+
+async def test_send_video_wraps_jpeg_bytes_in_video_blob():
+    session = gemini_session.GeminiLiveSession.__new__(gemini_session.GeminiLiveSession)
+    fake = _RecordingRealtimeInputSession()
+    session._session = fake
+
+    await session.send_video(b"fake-jpeg-bytes")
+
+    assert len(fake.calls) == 1
+    blob = fake.calls[0]["video"]
+    assert blob.data == b"fake-jpeg-bytes"
+    assert blob.mime_type == "image/jpeg"

@@ -181,6 +181,11 @@ class GeminiLiveSession:
             audio=types.Blob(data=pcm_bytes, mime_type="audio/pcm;rate=16000")
         )
 
+    async def send_video(self, jpeg_bytes: bytes) -> None:
+        await self._session.send_realtime_input(
+            video=types.Blob(data=jpeg_bytes, mime_type="image/jpeg")
+        )
+
     async def receive_events(self):
         while not self._closed:
             async for response in self._session.receive():
@@ -208,13 +213,17 @@ class GeminiLiveSession:
                 if response.tool_call:
                     function_responses = []
                     for fc in response.tool_call.function_calls:
-                        yield {"type": "status", "text": f"Bajarilmoqda: {fc.name}"}
-                        try:
-                            result = TOOL_DISPATCH[fc.name](**(fc.args or {}))
-                            yield {"type": "tool_result", "tool": fc.name, "result": result}
-                        except Exception as exc:
-                            result = {"error": str(exc)}
-                            yield {"type": "error", "text": f"{fc.name}: {exc}"}
+                        if fc.name in CAMERA_FUNCTION_NAMES:
+                            result = {"status": "ok"}
+                            yield {"type": fc.name}
+                        else:
+                            yield {"type": "status", "text": f"Bajarilmoqda: {fc.name}"}
+                            try:
+                                result = TOOL_DISPATCH[fc.name](**(fc.args or {}))
+                                yield {"type": "tool_result", "tool": fc.name, "result": result}
+                            except Exception as exc:
+                                result = {"error": str(exc)}
+                                yield {"type": "error", "text": f"{fc.name}: {exc}"}
                         function_responses.append(
                             types.FunctionResponse(name=fc.name, id=fc.id, response={"result": result})
                         )
