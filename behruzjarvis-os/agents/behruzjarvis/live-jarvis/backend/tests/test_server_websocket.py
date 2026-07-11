@@ -1,3 +1,4 @@
+import asyncio
 import base64
 import json
 
@@ -79,3 +80,43 @@ def test_websocket_sends_error_when_receive_events_fails():
 
     assert received[0] == {"type": "error", "text": "boom-receive"}
     assert received[1] == {"type": "closed"}
+
+
+class _RecordingVideoSession:
+    """Fake session whose receive_events() never completes on its own
+    (blocks on an Event that's never set), so the writer task can't race
+    ahead and get cancelled before reader() has processed the messages."""
+
+    def __init__(self):
+        self.received_frames = []
+
+    async def start(self):
+        return None
+
+    async def send_audio(self, pcm_bytes):
+        return None
+
+    async def send_video(self, jpeg_bytes):
+        self.received_frames.append(jpeg_bytes)
+
+    async def receive_events(self):
+        await asyncio.Event().wait()
+        return
+        yield  # pragma: no cover - makes this an async generator
+
+    async def close(self):
+        return None
+
+
+def test_websocket_relays_video_frame_to_session():
+    fake = _RecordingVideoSession()
+    server.session_factory = lambda: fake
+    client = TestClient(server.app)
+
+    with client.websocket_connect("/ws") as ws:
+        fake_jpeg = base64.b64encode(b"\xff\xd8\xff").decode("ascii")
+        ws.send_text(json.dumps({"type": "video_frame", "data": fake_jpeg}))
+        ws.send_text(json.dumps({"type": "stop"}))
+        json.loads(ws.receive_text())
+
+    assert fake.received_frames == [b"\xff\xd8\xff"]

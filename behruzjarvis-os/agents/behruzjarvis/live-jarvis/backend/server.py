@@ -68,6 +68,10 @@ async def websocket_endpoint(websocket: WebSocket):
                     pcm = base64.b64decode(message["data"])
                     await session.send_audio(pcm)
                     timer.touch()
+                elif message["type"] == "video_frame":
+                    jpeg_bytes = base64.b64decode(message["data"])
+                    await session.send_video(jpeg_bytes)
+                    timer.touch()
                 elif message["type"] == "stop":
                     return
         except WebSocketDisconnect:
