@@ -40,3 +40,10 @@ async def test_mock_session_silent_until_triggered():
 
     result = await collect_with_timeout()
     assert result == "timeout"
+
+
+@pytest.mark.asyncio
+async def test_mock_session_send_video_is_a_noop():
+    session = MockLiveSession()
+    result = await session.send_video(b"\xff\xd8\xff")
+    assert result is None

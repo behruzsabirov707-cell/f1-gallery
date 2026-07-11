@@ -21,6 +21,9 @@ class MockLiveSession:
         if self._chunks_received >= self.TRIGGER_CHUNKS:
             self._triggered.set()
 
+    async def send_video(self, jpeg_bytes: bytes) -> None:
+        return None
+
     async def receive_events(self):
         await self._triggered.wait()
         script = [
